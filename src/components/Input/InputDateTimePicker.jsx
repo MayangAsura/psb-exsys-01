@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 // import DateTimePicker from "react-datetime-picker"
 // import DatePicker from "react-datepicker";
 import { DatePicker, Stack } from 'rsuite';
@@ -11,10 +11,16 @@ function InputDateTimePicker({labelTitle, labelStyle, register, nameInput, type,
 
     const [value, setValue] = useState(new Date())
 
+    useEffect(() => {
+        if(defaultValue){
+            setValue(defaultValue)
+        }
+    },[defaultValue])
     const updateInputValue = (val) => {
         // val.toISOString()
         setValue(val.toISOString())
         updateFormValue({updateType, nameInput, value})
+        console.log(value)
     }
 
     const CustomTimeInput = ({ value, onChange }) => (
@@ -28,7 +34,7 @@ function InputDateTimePicker({labelTitle, labelStyle, register, nameInput, type,
     );
 
     return(
-        <div className={`form-control w-full ${containerStyle}`}>
+        <div className={`form-control w-full  ${containerStyle}`}>
             <label className="label">
                 <span className={"label-text text-base-content " + labelStyle}>{labelTitle}</span>
             </label>
@@ -38,7 +44,7 @@ function InputDateTimePicker({labelTitle, labelStyle, register, nameInput, type,
                 caretAs={FaCalendar}
                 style={{ width: 220 }}
                 name={nameInput}
-                value={value && new Date(value) }
+                value={value}
                 onChange={updateInputValue}
                 />
             {/* <DatePicker

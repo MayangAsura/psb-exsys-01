@@ -62,7 +62,7 @@ const socials = [
   },
 ];
 
-const Presence = (props) => {
+const Presence = ({id, sid}) => {
 
   const [applicantPresence, setApplicantPresence] = useState({})
   const dispatch = useDispatch()
@@ -74,9 +74,9 @@ const Presence = (props) => {
   //   },[])
 
     useEffect(() =>{
-      getPresenceData(props.id, props.sid)
+      getPresenceData(id, sid)
       console.log(applicantPresence)
-    },[props.id, props.sid])
+    },[id, sid])
 
     
     const getPresenceData = async(id, sid) => {
@@ -85,7 +85,7 @@ const Presence = (props) => {
             .from('exam_presences')
             .select('*, exam_schedules(started_at, ended_at)')
             .eq('appl_id', id)
-            // .eq('exam_schedule_id', sid)
+            .eq('schedule_id', sid)
             // .eq('dele', sid)
 
         if(!error){
@@ -140,59 +140,69 @@ const Presence = (props) => {
 
   const handlePresence = async () => {
 
-
+    console.log(id, sid)
     let { data: presence, pre_error } = await supabase
       .from('exam_presences')
       .select('appl_id')
       .eq('appl_id', id)
   
-    if(presence){
+    if(presence.length > 0){
       openErrorModal({message: "Anda telah melakukan presensi sebelumnya."})
     }
-    if(!presence){
+    if(!presence || presence.length == 0){
 
-      const sid = props.sid? props.sid : 'd17ff676-85d2-4f9e-88f1-0fdfb37517b9'
-    const id = props.id? props.id : '5a49e038-9f25-4e37-a2b8-f4ed6fc7a923'
-    const { data, error } = await supabase
-      .from('exam_presences')
-      .insert([
-        { exam_schedule_id: sid, appl_id: id, queue_number: getQueNum(), presence_at: new Date().toISOString(), status: 'ongoing', created_by: id },
-      ])
-      .select()
-      console.log()
+    //   const sid = sid? sid : 'd17ff676-85d2-4f9e-88f1-0fdfb37517b9'
+    // const id = id? id : '5a49e038-9f25-4e37-a2b8-f4ed6fc7a923'
+    const dataPresence = { schedule_id: sid, appl_id: id, queue_number: 0, presence_at: new Date().toISOString(), status: 'ongoing', created_by: id }
+    const { data: exam_presences, error } = await supabase
+                        .from('exam_presences')
+                        .insert([
+                          dataPresence
+                        ])
+                        .select()
+
+      console.log(exam_presences)
     if(error){
       openErrorModal({message: "Data tidak ditemukan"})
     }else{
-      openSuccessModal()
+      setApplicantPresence(exam_presences[0])
+
+      openSuccessModal(exam_presences[0])
     }
     }
     // const presence_at
-    const sid = props.sid? props.sid : 'd17ff676-85d2-4f9e-88f1-0fdfb37517b9'
-    const id = props.id? props.id : '5a49e038-9f25-4e37-a2b8-f4ed6fc7a923'
-    const { data, error } = await supabase
-      .from('exam_presences')
-      .insert([
-        { exam_schedule_id: sid, appl_id: id, queue_number: getQueNum(), presence_at: new Date().toISOString(), status: 'ongoing', created_by: id },
-      ])
-      .select()
-      console.log()
-    if(error){
-      openErrorModal()
-    }else{
-      openSuccessModal()
-    }
+    // const sid = sid? sid : 'd17ff676-85d2-4f9e-88f1-0fdfb37517b9'
+    // const id = id? id : '5a49e038-9f25-4e37-a2b8-f4ed6fc7a923'
+    // const { data, error } = await supabase
+    //   .from('exam_presences')
+    //   .insert([
+    //     { exam_schedule_id: sid, appl_id: id, queue_number: getQueNum(), presence_at: new Date().toISOString(), status: 'ongoing', created_by: id },
+    //   ])
+    //   .select()
+    //   console.log()
+    // if(error){
+    //   openErrorModal()
+    // }else{
+    //   openSuccessModal()
+    // }
               
   }
-  const getQueNum = () => {
+  const getQueNum = async () => {
   //   min = Math.ceil(min);
   // max = Math.floor(max);
+  let {data: exam_presences, error} = await supabase
+                                    .select('*')
+                                    .eq('schedule_id', sid)
+
+                                      
+
   return Math.floor(Math.random() * (100 - 1 + 1)) + 1;
     // return num
   }
-  const openSuccessModal = () => {
-  console.log('masuk')
+  const openSuccessModal = (data) => {
+  console.log('masuk', applicantPresence)
   dispatch(openModal({title : "Presensi Berhasil", bodyType : MODAL_BODY_TYPES.MODAL_SUCCESS,
-    extraObject : {message : "Waktu Presensi "+  getFormatDate(applicantPresence.presence_at), type: CONFIRMATION_MODAL_CLOSE_TYPES.LOGIN_SUCCESS}
+    extraObject : {message : "Waktu Presensi "+  getFormatDate(data.presence_at), type: CONFIRMATION_MODAL_CLOSE_TYPES.LOGIN_SUCCESS}
   }))
 }
   const openErrorModal = ({message}) => {

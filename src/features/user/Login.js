@@ -158,8 +158,9 @@ function Login(){
     }
 
     const updateFormValue = ({updateType, value}) => {
+        setLoginObj(prev => ({...prev, [updateType] : value}))
         setErrorMessage("")
-        setLoginObj({...loginObj, [updateType] : value})
+        console.log(loginObj)
     }
 
     return(
@@ -175,7 +176,7 @@ function Login(){
 
                         <div className="mb-4">
 
-                            <InputText type="username" defaultValue={loginObj.username} updateType="username" containerStyle="mt-4" labelTitle="Username" updateFormValue={updateFormValue}/>
+                            <InputText type="text" defaultValue={loginObj.username} updateType="username" containerStyle="mt-4" labelTitle="Username" updateFormValue={updateFormValue}/>
 
                             <InputText defaultValue={loginObj.password} type="password" updateType="password" containerStyle="mt-4" labelTitle="Password" updateFormValue={updateFormValue}/>
 

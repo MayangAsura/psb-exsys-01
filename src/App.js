@@ -63,13 +63,13 @@ function App() {
           {/* <Route path="*" element={<Navigate to={token_user? "/landing" : ()} replace />}/> */}
           {/* <Route path="*" element={<Navigate to={token? "/ad/welcome" : (token_user? "/landing": (!token_user? "/login": !token? "/ad/login": "")} replace />}/> */}
           <Route path="/login" element={<LandingLogin />} />
-          <Route path="/ad/login" element={<Login />} />
+          {/* <Route path="/ad/login" element={<Login />} />
           <Route path="/ad/forgot-password" element={<ForgotPassword />} />
           <Route path="/ad/register" element={<Register />} />
-          <Route path="/ad/documentation" element={<Documentation />} />
+          <Route path="/ad/documentation" element={<Documentation />} /> */}
           
           {/* Place new routes admin over this*/}
-          <Route path="/ad/*" element={<Layout />} />
+          {/* <Route path="/ad/*" element={<Layout />} /> */}
           {/* Place new routes user over this */}
           {/* <Route element={<ProtectedRoute/>}> */}
             <Route path="/landing" element={<Landing />} />
