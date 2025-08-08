@@ -100,7 +100,7 @@ function Header(){
                     <label tabIndex={0} className="btn btn-ghost btn-circle avatar">
                         <div className="w-10 rounded-full">
                         {/* https://placeimg.com/80/80/people */}
-                        <img src="" alt="profile" />
+                        <img src="../avatar.jpg" alt="profile" />
                         </div>
                     </label>
                     <ul tabIndex={0} className="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52">

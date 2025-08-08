@@ -282,9 +282,10 @@ const MCExam = () => {
                       <p className="font-bold text-gray-900 text-4xl flex justify-center text-center items-center">
                         {exam.name}
                       </p>
-                      <p className="text-gray-800 text-md mt-3">{getFormatDate(exam.started_at)}</p>
+                      <p className="text-gray-800 text-md mt-3">Waktu Ujian : {getFormatDate(exam.started_at)} - {getFormatDate(exam.ended_at)} </p>
                       <p className="text-gray-800 text-md">Jumlah Soal : {quedata.length} Soal</p>
-                      <p className="text-gray-800 text-md">Durasi : {duration}</p>
+                      {/* <p className="text-gray-800 text-md">Durasi : {duration}</p>
+                      <p className="text-gray-800 text-md">Durasi : {duration}</p> */}
                     </div>
                   </div>
                 </section>
@@ -312,7 +313,7 @@ const MCExam = () => {
                                     {question.options.map((option) => (
                                       <label key={option.id} className="pr-2 flex gap-2 justify-start items-center mb-2" style={{ whiteSpace: 'normal !important' }}>
                                         <input
-                                          className="form-input radio-md text-gray-800 rounded-lg"
+                                          className="form-input radio-md text-gray-800 rounded-lg checked:bg-green-900"
                                           name={question.id}
                                           type="radio"
                                           value={option.id}
