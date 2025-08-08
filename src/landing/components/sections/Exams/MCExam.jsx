@@ -72,10 +72,34 @@ const MCExam = () => {
     if (id) {
       getExam(id);
       getquedata(id);
+      if(exam.ended_at < ti){
+        console.log(exam.ended_at)
+        console.log(ti)
+        dispatch(openModal({
+        title: "Gagal",
+        bodyType: MODAL_BODY_TYPES.MODAL_SUCCESS,
+        extraObject: {
+          message: 'Sesi Ujian telah berakhir',
+          type: CONFIRMATION_MODAL_CLOSE_TYPES.LOGIN_SUCCESS
+        }
+      }));
+      }
+      if(exam.started_at > ti){
+        console.log(exam.started_at)
+        console.log(ti)
+        dispatch(openModal({
+        title: "Gagal",
+        bodyType: MODAL_BODY_TYPES.MODAL_SUCCESS,
+        extraObject: {
+          message: 'Sesi Ujian belum dimulai',
+          type: CONFIRMATION_MODAL_CLOSE_TYPES.LOGIN_SUCCESS
+        }
+      }));
+      }
       getUser();
     }
     
-  }, [id]);
+  }, [id, ti]);
 
   const getti = async () =>{
         let { data, error } = await supabase
@@ -172,11 +196,18 @@ const MCExam = () => {
         console.log(selectedOptionId)
         const selectedOptionAnswer = _selectedOption.split('|')[1];
         
-        const selectedOption = question.options.find(opt => (opt.answer === selectedOptionAnswer));
-        console.log(selectedOption)
-        if (!selectedOption) return total;
+        if(selectedOptionId === question.exam_content_option_id){
+          
+           total = total + (question?.score || 0);
+        }
+        // const selectedOption = question.options.find(opt => selectedOptionId === question.exam_content_option_id );
+        return total
+        
+        
+        
+        // console.log(selectedOption)
+        // if (!selectedOption) return total;
 
-        return total + (question?.score || 0);
       }, 0);
 
       // Create exam response
