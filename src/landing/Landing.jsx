@@ -107,16 +107,18 @@ function Landing() {
     }
   const page = 'Beranda'
   return (
-    <main className="min-h-screen relative bg-gray-50 pb-10" >
+    <main className="min-w-screen max-w-lg mx-auto min-h-screen relative bg-gray-50 pb-10" >
       <Header id={applicant.id}/>
       {/* style={{ maxWidth:390 }} */}
       <ProfileCover page={page} />
-      <div className="container px-4">
+      {/* max-w-sm md:max-w-2xl lg:max-w-2xl md:w-3/3 lg:w-3/3*/}
+      <div className="container  px-4">
         <div className="flex flex-wrap px-4">
-          <div className="w-full lg:w-1/3 mb-5 my">
+          <div className="w-full mb-0">
             <Profile id={applicant.id} sid={sid} ip={ip} />
+            <hr />
           </div>
-          <div className="w-full lg:w-2/3 ">
+          <div className="w-full ">
             <Presence id={applicant.id} sid={sid} />
             <Exam id={applicant.id} sid={sid} />
             {/* <Navbar /> */}

@@ -1,14 +1,20 @@
-import React from "react";
+import React, { useEffect } from "react";
 import ExamItemCover from "./ExamItemCover";
 import { FaPencilAlt } from "react-icons/fa";
+import { RiErrorWarningFill } from "react-icons/ri"; 
 import { useNavigate } from "react-router-dom";
 
 const ExamItem = (props) => {
-  const { icon, name, status, location, schedule_name, started_at, id } = props.exam;
+  const { icon, name, location, room, schedule_name, started_at, id, is_response } = props.exam;
   const navigate = useNavigate()
   const handleS = () =>{
     navigate(`/u/exam/${id}/show`)
   }
+  useEffect(() => {
+    console.log('prop', props.exam)
+    console.log('response-', props.is_response)
+    console.log('response-', is_response)
+  }, props.exam, props.is_response)
   const formatDate = (date) => {
       const dayNames = ['Ahad', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
       const monthNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
@@ -27,13 +33,14 @@ const ExamItem = (props) => {
     }
 
   return (
-    <div className="w-full lg:w-1/2" key={id}>
+    <div className="w-full " key={id}>
+      {/* lg:w-1/2 */}
       <div className="my-4 md:mx-4 shadow p-6 rounded-md bg-white group hover:shadow-md">
         <ExamItemCover icon={icon} title={name} />
         <div className="flex flex-col">
           <div className="flex flex-col gap-1 my-3 mr-2">
             <p className="text-sm  font-bold text-gray-600">Status</p>
-            <p className="text-lg text-gray-400">{status?? 'Belum Ujian'}</p>
+            <p className="text-lg text-gray-400">{props.is_response===true?'Sudah Mengerjakan':'Belum Ujian'}</p>
           </div>
           {/* <div className="flex flex-col my-3 mr-2">
             <p className="text-sm  font-bold text-gray-600">Jadwal Ujian</p>
@@ -47,17 +54,23 @@ const ExamItem = (props) => {
             <p className="text-base  font-bold text-gray-600">Lokasi Ujian</p>
             <p className="text-lg text-gray-400">{location?? 'SDIT RABBAANII'}</p>
           </div>
-          {status!=='done' && (
+          <div className="flex flex-col mr-2">
+            <p className="text-base  font-bold text-gray-600">Ruangan Ujian</p>
+            <p className="text-lg text-gray-400">{room?? 'SDIT RABBAANII'}</p>
+          </div>
+          {!is_response|| is_response==false? (
           <button className="flex flex-1 justify-center items-center bg-green-600 hover:bg-green-500 hover:text-gray-500 rounded-md py-3 px-2 mt-10 hover:bg-black-200" onClick={handleS}>
               <FaPencilAlt className="mr-1 text-center text-base text-gray-900" /> 
-              <span className="text-gray-800 text-lg  ">Mulai</span>
+              <span className="text-gray-800 text-lg">Mulai</span>
+          </button>
+          ): (
+<button className="flex flex-1 justify-center disabled items-center bg-green-600 rounded-md py-5 px-2 mt-10 hover:bg-black-200">
+              <RiErrorWarningFill className="w-15 mr-1 text-center text-base text-gray-900" /> 
+              <span className="text-gray-800 text-lg">Selesai</span>
           </button>
           )}
-          {/* {status=='done' && (
-          <button className="flex flex-1 justify-center disabled items-center bg-green-600 rounded-md py-5 px-2 mt-10 hover:bg-black-200" onClick={handleS}>
-              <FaPencilAlt className="mr-1 text-center text-base text-gray-900" /> 
-              <span className="text-gray-900">Selesai</span>
-          </button>
+          {/* {is_response===true && (
+          
           )} */}
 
         </div>

@@ -159,19 +159,42 @@ const Exam = ({id, sid}) => {
     .from('exam_tests')
     .select('*, exam_test_participants(appl_id), exam_schedule_tests(exam_schedule_id)')
     // .eq('exam_tests[0].exam_schedule_tests.exam_schedule_id', sid)
-    .eq('exam_test_participants.appl_id', 'd17ff676-85d2-4f9e-88f1-0fdfb37517b9')
-    .eq('exam_schedule_tests.exam_schedule_id', 'e91f0c82-6a57-4b76-a4bb-6d7fc59c51a5')
-  
+    .eq('exam_test_participants.appl_id', '7ec623ca-6ee8-4754-92bb-8c8da7d4a2a5')
+    .eq('exam_schedule_tests.exam_schedule_id', 'd17ff676-85d2-4f9e-88f1-0fdfb37517b9')
+  // e91f0c82-6a57-4b76-a4bb-6d7fc59c51a5
 
     if(!error2){
       console.log('exam', exam_test_participants)
       // const {exam_schedule_test, ...data} = exam_test_participants[0]
-      setExamData(exam_test_participants)
-      console.log('examData', examData)
+      // setExamData(exam_test_participants)
+      
+      const newExamData = await Promise.all(
+        exam_test_participants.map( async (exam) => (
+        
+        {...exam, is_reponse : await getApplExamResponse(exam.id) }))
+      )
+      setExamData(newExamData)
+
+      console.log('examData-', examData)
     }
 
     // console.log(exam_tests)
           
+  }
+
+  const getApplExamResponse = async (eid) => {
+    
+    let {data: response, error} = await supabase.from('exam_test_responses')
+                                    .select('*')
+                                    .eq('appl_id', '7ec623ca-6ee8-4754-92bb-8c8da7d4a2a5')
+                                    .eq('exam_test_id', eid)
+                                    .is('deleted_at', null)
+
+                                    if(response.length>0){
+                                      console.log('res',response)
+                                      return true
+                                    }
+                                    return false
   }
 
   // const ExamList = examData.map((e) => (
@@ -180,7 +203,7 @@ const Exam = ({id, sid}) => {
   return (
     <section className="pb-10">
       
-        <div className="w-full container px-4">
+        <div className="w-full container">
             <div className="my-4 md:mx-4 shadow p-6 rounded-md bg-white group hover:shadow-md">
               <div className="flex flex-row gap-3 justify-start items-center">
               
@@ -215,7 +238,7 @@ const Exam = ({id, sid}) => {
                 {/* {icon} */}
                 <div className="flex flex-wrap md:px-4">
                   { examData.map((e, k) => (
-                    <ExamItem exam={e} key={k} />
+                    <ExamItem exam={e} is_reponse={e.is_reponse} key={k}  />
                   ))}
                   {/* {ExamList} */}
                   {/* {examData.forEach((element, id) => {

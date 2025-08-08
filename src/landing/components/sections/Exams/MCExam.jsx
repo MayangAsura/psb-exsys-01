@@ -19,6 +19,7 @@ const MCExam = () => {
   const [started_at, setStartedAt] = useState("");
   const [remainingTime, setRemainingTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [ti, setTi] = useState("");
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [appl_id, setApplId] = useState("");
@@ -38,11 +39,12 @@ const MCExam = () => {
 
   // Initialize timer
   useEffect(() => {
-    if (!exam?.started_at || !exam?.ended_at || !started_at) return;
+    getti()
+    if (!exam?.started_at || !exam?.ended_at || !started_at || !ti) return;
 
     const calculateInitialTime = () => {
       const totalDuration = (new Date(exam.ended_at) - new Date(exam.started_at)) / 1000;
-      const elapsedTime = (new Date() - new Date(started_at)) / 1000;
+      const elapsedTime = (new Date(ti) - new Date(started_at)) / 1000;
       setDuration(formatTime(Math.max(0, Math.floor(totalDuration - elapsedTime))))
       return Math.max(0, Math.floor(totalDuration - elapsedTime));
     };
@@ -72,7 +74,20 @@ const MCExam = () => {
       getquedata(id);
       getUser();
     }
+    
   }, [id]);
+
+  const getti = async () =>{
+        let { data, error } = await supabase
+            .rpc('get_current_ttmp')
+          if (error) console.error(error)
+          else{
+
+        setTi(data)
+        console.log(data)
+        return data
+          } 
+        }
 
   const getExam = async (id) => {
     const { data: exam_tests, error } = await supabase
@@ -156,10 +171,12 @@ const MCExam = () => {
         const selectedOptionId = _selectedOption.split('|')[0];
         console.log(selectedOptionId)
         const selectedOptionAnswer = _selectedOption.split('|')[1];
-        if (!selectedOptionId) return total;
         
-        const selectedOption = question.options.find(opt => opt.id === selectedOptionId);
-        return total + (selectedOption?.point || 0);
+        const selectedOption = question.options.find(opt => (opt.answer === selectedOptionAnswer));
+        console.log(selectedOption)
+        if (!selectedOption) return total;
+
+        return total + (question?.score || 0);
       }, 0);
 
       // Create exam response
@@ -311,13 +328,27 @@ const MCExam = () => {
                                   <td></td>
                                   <td>
                                     {question.options.map((option) => (
-                                      <label key={option.id} className="pr-2 flex gap-2 justify-start items-center mb-2" style={{ whiteSpace: 'normal !important' }}>
+                                      
+                                      <label key={option.id} className="pr-2 flex gap-2 justify-start items-center mb-2" >
+{/* <div class="flex items-center mb-4">
+    <input id="default-radio-1" type="radio"
+    name={question.id}
+                                          
+                                          value={option.id}
+                                          // checked={selectedAnswers[question.id] === option.id}
+                                          onChange={() => handleAnswerSelect(question.id, option.id, option.option)}
+     className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
+    <label for="default-radio-1" class="ms-2 text-sm text-gray-900 dark:text-gray-300">Default radio</label>
+</div> */}
                                         <input
-                                          className="form-input radio-md text-gray-800 rounded-lg checked:bg-green-900"
+                                          // className="form-input radio-md text-gray-800 rounded-sm border-gray-600 focus:ring-2 focus:ring-orange-300 dark:focus:ring-orange-600 dark:focus:bg-orange-600 dark:bg-gray-700 dark:border-gray-600 accent-green-500"
+                                          // className="form-input radio-lg text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                                          // className="w-3 h-3 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                                          className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                                           name={question.id}
                                           type="radio"
                                           value={option.id}
-                                          checked={selectedAnswers[question.id] === option.id}
+                                          // checked={selectedAnswers[question.id] === option.id}
                                           onChange={() => handleAnswerSelect(question.id, option.id, option.option)}
                                         />
                                         <span className="text-gray-800">
