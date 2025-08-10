@@ -81,7 +81,7 @@ function Header({id}){
                     {/* <label htmlFor="left-sidebar-drawer" className="btn btn-primary drawer-button lg:hidden">
                     <Bars3Icon className="h-5 inline-block w-5"/>
                     </label> */}
-                    <h1 className="text-2xl font-semibold ml-2">PSB-RIS Exam</h1>
+                    <h1 className="text-2xl font-semibold ml-2">PSB Exam</h1>
                 </div>
 
                 
