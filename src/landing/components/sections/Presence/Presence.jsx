@@ -285,7 +285,7 @@ const getFormatDate = (date) => {
       ):(
         <>
         <div className="flex flex-col justify-center items-center">
-          <p className="flex flex-row">Anda belum melakukan presensi. Silakan klik tombol di bawa in ipresensi</p>
+          <p className="flex flex-row">Anda belum melakukan presensi. Silakan klik tombol di bawah ini untuk presensi.</p>
         <button className="flex btn btn-md text-lg bg-orange-500 " onClick={handlePresence}>Presensi</button>
         </div>
         </>
