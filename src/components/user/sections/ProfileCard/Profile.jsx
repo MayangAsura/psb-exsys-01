@@ -63,7 +63,7 @@ const Profile = ({id, sid, ip}) => {
   const [applicant, setApplicant] = useState({})
 
   useEffect(() => {
-        getExamData()
+        // getExamData()
         console.log(applicant)
         if(!applicant.ip){
           applicant.ip = ip
@@ -72,15 +72,15 @@ const Profile = ({id, sid, ip}) => {
 
     const getExamData = async() => {
     
-        let { data: exam_profiles, error } = await supabase
-            .from('exam_profiles')
-            .select('*')
-            .eq('appl_id', id)
+        // let { data: exam_profiles, error } = await supabase
+        //     .from('exam_profiles')
+        //     .select('*')
+        //     .eq('appl_id', id)
 
-        if(!error){
-          setApplicant(exam_profiles[0])
-          console.log('applicant', applicant)
-        }
+        // if(!error){
+        //   setApplicant(exam_profiles[0])
+        //   console.log('applicant', applicant)
+        // }
             
     }
   

@@ -77,14 +77,14 @@ const Presence = (props) => {
 
     const getPresenceData = async(id) => {
     
-        let { data: exam_presences, error } = await supabase
-            .from('exam_presences')
-            .select('*, exam_schedule_tests(started_at, ended_at)')
-            .eq('id', id)
+        // let { data: exam_presences, error } = await supabase
+        //     .from('exam_presences')
+        //     .select('*, exam_schedule_tests(started_at, ended_at)')
+        //     .eq('id', id)
 
-        if(!error){
-          setApplicantPresence(exam_presences[0])
-        }
+        // if(!error){
+        //   setApplicantPresence(exam_presences[0])
+        // }
             
     }
 

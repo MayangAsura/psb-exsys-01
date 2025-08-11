@@ -70,22 +70,22 @@ const Presence = () => {
   //   },[])
 
     useEffect(() =>{
-      getPresenceData()
+      // getPresenceData()
       console.log(applicantPresence)
     },[])
 
-    const getPresenceData = async() => {
+    // const getPresenceData = async() => {
     
-        let { data: exam_presences, error } = await supabase
-            .from('exam_presences')
-            .eq('id', '')
-            .select('*')
+    //     let { data: exam_presences, error } = await supabase
+    //         .from('exam_presences')
+    //         .eq('id', '')
+    //         .select('*')
 
-        if(!error){
-          setApplicantPresence(exam_presences[0])
-        }
+    //     if(!error){
+    //       setApplicantPresence(exam_presences[0])
+    //     }
             
-    }
+    // }
 
   const formatDate = (date) => {
     const dayNames = ['Ahad', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];

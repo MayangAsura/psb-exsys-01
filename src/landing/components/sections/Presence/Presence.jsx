@@ -74,23 +74,26 @@ const Presence = ({id, sid}) => {
   //   },[])
 
     useEffect(() =>{
-      getPresenceData(id, sid)
+      getPresenceData()
       console.log(applicantPresence)
-    },[id, sid])
+    },[])
 
     
-    const getPresenceData = async(id, sid) => {
+    const getPresenceData = async() => {
     
+      if(id && sid){
         let { data: exam_presences, error } = await supabase
             .from('exam_presences')
             .select('*, exam_schedules(started_at, ended_at)')
-            .eq('appl_id', id)
-            .eq('schedule_id', sid)
+            .eq('appl_id', id??null)
+            .eq('schedule_id', sid??null)
             // .eq('dele', sid)
 
         if(!error){
           setApplicantPresence(exam_presences[0])
         }
+
+      }
             
     }
 

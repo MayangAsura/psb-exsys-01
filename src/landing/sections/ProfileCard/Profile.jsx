@@ -72,7 +72,7 @@ const Profile = ({id, sid, ip}) => {
           applicant.ip = ip
           updateIp()
         }
-    },[applicant?.ip, id])
+    },[id])
 
     const getExamData = async(id) => {
     

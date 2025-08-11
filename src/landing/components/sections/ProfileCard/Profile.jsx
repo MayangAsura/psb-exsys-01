@@ -65,20 +65,20 @@ const Profile = (props) => {
   const [applicant, setApplicant] = useState({})
 
   useEffect(() => {
-        getExamData(props.id, props.sid)
+        // getExamData(props.id, props.sid)
         console.log(applicant)
     },[])
 
     const getExamData = async(id, sid) => {
     
-        let { data: exam_profiles, error } = await supabase
-                      .from('exam_profiles')
-                      .select('*')
-                      .eq('appl_id', id)
+        // let { data: exam_profiles, error } = await supabase
+        //               .from('exam_profiles')
+        //               .select('*')
+        //               .eq('appl_id', id)
 
-        if(!error){
-        setApplicant(exam_profiles[0])
-        }
+        // if(!error){
+        // setApplicant(exam_profiles[0])
+        // }
             
     }
   

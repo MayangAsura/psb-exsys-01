@@ -56,43 +56,53 @@ function Landing() {
     const token_user = localStorage.getItem('token-user')
     if(token_user){
       
-      let { data: applicants, error } = await supabase.from('applicants').select('*')
-      .eq('refresh_token', token_user)
-      console.log('masuk getapl-')
-      // .eq('status', 'active')
-      // console.log(applicants)
-      if(applicants){
-        // full_name, phone_number, regist_number, participants(dob, home_address, participant_father_data(father_name), participant_mother_data(mother_name))π
-        setApplicant(applicants[0])
-
-        console.log('applicant from g', applicants[0])
-      // let { data: exam_test_participants, errorpart } = await supabase
-      //   .from('exam_schedule_tests')
-      //   .select('*, exam_tests(exam_test_participants(appl_id))')
-        // .eq('appl_id', applicants[0].id)
-
-        let { data: exam_test_participants, error2 } = await supabase
-                                                    .from('exam_schedule_tests')
-                                                    .select('exam_schedule_id, exam_tests(exam_test_participants(appl_id))')
-    // .eq('exam_tests[0].exam_schedule_tests.exam_schedule_id', sid)
-    .eq('exam_tests.exam_test_participants.appl_id', applicant.id?applicant.id: applicants[0].id)
-    // , exam_schedule_tests(exam_schedule_id)
-    // .neq('exam_schedule_tests.exam_schedule_id', null)
-    // .neq('exam_test_participants.appl_id', null)
-
-    console.log('exam_test_participants', exam_test_participants)
-    if(!exam_test_participants || error2){
-          // openErrorModal()
-        }
-        if(exam_test_participants){
-          // console.log(exam_test_participants[0])
-          setScheduleId(exam_test_participants[0]?.exam_schedule_id)
-          console.log('sid-', sid)
-          // sid = exam_test_participants[0]?.exam_schedule_tests[0]?.exam_schedule_id??''
-          // sid = exam_test_participants[0].exam_tests.exam_schedule_tests[0].exam_schedule_id
-        }
+      try {
         
+        let { data: applicants, error } = await supabase.from('applicants').select('*')
+        .eq('refresh_token', token_user)
+        console.log('masuk getapl-')
+        // .eq('status', 'active')
+        // console.log(applicants)
+        if(applicants){
+          // full_name, phone_number, regist_number, participants(dob, home_address, participant_father_data(father_name), participant_mother_data(mother_name))π
+          setApplicant(applicants[0])
+  
+          console.log('applicant from g', applicants[0], applicant)
+        // let { data: exam_test_participants, errorpart } = await supabase
+        //   .from('exam_schedule_tests')
+        //   .select('*, exam_tests(exam_test_participants(appl_id))')
+          // .eq('appl_id', applicants[0].id)
+  
+          let { data: exam_test_participants, error2 } = await supabase
+                                                      .from('exam_schedule_tests')
+                                                      .select('exam_schedule_id, exam_tests(exam_test_participants(appl_id))')
+      // .eq('exam_tests[0].exam_schedule_tests.exam_schedule_id', sid)
+      .eq('exam_tests.exam_test_participants.appl_id', applicant.id?applicant.id: applicants[0].id)
+      // , exam_schedule_tests(exam_schedule_id)
+      // .neq('exam_schedule_tests.exam_schedule_id', null)
+      // .neq('exam_test_participants.appl_id', null)
+  
+      console.log('exam_test_participants', exam_test_participants)
+      setScheduleId(exam_test_participants[0]?.exam_schedule_id)
+      // sid = exam_test_participants[0]?.exam_schedule_id
+      console.log('sid-', sid)
+      if(!exam_test_participants || error2){
+            // openErrorModal()
+          }
+          if(exam_test_participants.length > 0){
+            // console.log(exam_test_participants[0])
+            setScheduleId(exam_test_participants[0]?.exam_schedule_id)
+            console.log('exam_test_participants', exam_test_participants)
+            console.log('sid-', sid)
+            // sid = exam_test_participants[0]?.exam_schedule_tests[0]?.exam_schedule_id??''
+            // sid = exam_test_participants[0].exam_tests.exam_schedule_tests[0].exam_schedule_id
+          }
+          
+        }
+      } catch (error) {
+        console.log('error from applicant data', error)
       }
+      
       
       
   
