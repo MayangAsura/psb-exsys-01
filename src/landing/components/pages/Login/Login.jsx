@@ -12,12 +12,14 @@ import '../../../../index-user.css'
 
 import axios from '../../../../services/api/local-server'
 import supabase from "../../../../services/database-server"
+import { useSearchParams } from 'react-router-dom';
 // import logo from './logo.png'
 
 import { TbEye, TbEyeOff } from "react-icons/tb";
 
 const Login = () =>{
   
+
   // const {userInfo, userToken, errorMsg, userPayment, userSchool, userFormComplete, error } = useSelector((state) => state.auth)
   const dispatch = useDispatch()
   const navigate = useNavigate()
@@ -28,6 +30,8 @@ const Login = () =>{
   const [loading, setLoading] = useState(false)
   const [isVisible, setIsVisible] = useState(false)
   const [currentTheme, setCurrentTheme] = useState(localStorage.getItem("theme"))
+  const [searchParams] = useSearchParams();
+  const token = searchParams.get("token")
 
   useEffect(() => {
     if(currentTheme === null){
@@ -38,7 +42,13 @@ const Login = () =>{
             }
     }
     getApplIp()
-  },[])
+    if(token){
+      localStorage.setItem('token-user', token)
+      const ntoken = localStorage.getItem("token-user")
+      console.log('login',ntoken)
+      navigate('landing')
+    }
+  },[token])
 
   const handledVisible = () => {
     setIsVisible(prevState => !prevState)

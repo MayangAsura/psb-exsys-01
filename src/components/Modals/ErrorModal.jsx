@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom'
 // import { deleteLead } from '../../leads/leadSlice'
 // import { showNotification } from '../headerSlice'
 
-function ErrorModal({ extraObject, closeModal}){
+function ErrorModal({ closeModal, extraObject}){
 
     const dispatch = useDispatch()
     const navigate = useNavigate()
@@ -34,6 +34,20 @@ function ErrorModal({ extraObject, closeModal}){
         if(type === CONFIRMATION_MODAL_CLOSE_TYPES.LOGIN_ERROR){
             console.log('ind',index)
             navigate('/login')
+            // positive response, call api or dispatch redux function
+        // dispatch(deleteLead({index}))
+            // dispatch(showNotification({message : "Lead Deleted!", status : 1}))
+        }
+        if(type === CONFIRMATION_MODAL_CLOSE_TYPES.EXAM_ERROR){
+            console.log('ind',index)
+            navigate('/landing')
+            // positive response, call api or dispatch redux function
+        // dispatch(deleteLead({index}))
+            // dispatch(showNotification({message : "Lead Deleted!", status : 1}))
+        }
+        if(type === CONFIRMATION_MODAL_CLOSE_TYPES.START_EXAM_ERROR){
+            console.log('ind',index)
+            navigate(`/u/exam/${index}/show`)
             // positive response, call api or dispatch redux function
         // dispatch(deleteLead({index}))
             // dispatch(showNotification({message : "Lead Deleted!", status : 1}))

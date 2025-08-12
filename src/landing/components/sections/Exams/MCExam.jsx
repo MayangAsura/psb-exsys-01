@@ -27,7 +27,7 @@ const MCExam = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { id } = useParams();
+  const id = useParams().exam_id;
 
   // Timer functions
   const formatTime = (seconds) => {
@@ -41,12 +41,16 @@ const MCExam = () => {
   useEffect(() => {
     getti()
     if (!exam?.started_at || !exam?.ended_at || !started_at || !ti) return;
-
+    console.log(started_at,exam.started_at, ti)
     const calculateInitialTime = () => {
       const totalDuration = (new Date(exam.ended_at) - new Date(exam.started_at)) / 1000;
-      const elapsedTime = (new Date(ti) - new Date(started_at)) / 1000;
-      setDuration(formatTime(Math.max(0, Math.floor(totalDuration - elapsedTime))))
-      return Math.max(0, Math.floor(totalDuration - elapsedTime));
+      const remining = (new Date(exam.ended_at) - new Date(ti)) / 1000;
+      const elapsedTime = (new Date(started_at)) / 1000;
+      
+      //  - new Date(started_at)
+      console.log(new Date(totalDuration).toISOString(), new Date(elapsedTime), formatTime(Math.max(0, Math.floor(totalDuration - elapsedTime))))
+      setDuration(formatTime(Math.max(0, Math.floor(totalDuration))))
+      return Math.max(0, Math.floor(remining));
     };
 
     setRemainingTime(calculateInitialTime());
@@ -70,6 +74,7 @@ const MCExam = () => {
   // Data fetching
   useEffect(() => {
     if (id) {
+      console.log('id>', id)
       getExam(id);
       getquedata(id);
       if(exam.ended_at < ti){
@@ -80,7 +85,8 @@ const MCExam = () => {
         bodyType: MODAL_BODY_TYPES.MODAL_SUCCESS,
         extraObject: {
           message: 'Sesi Ujian telah berakhir',
-          type: CONFIRMATION_MODAL_CLOSE_TYPES.LOGIN_SUCCESS
+          type: CONFIRMATION_MODAL_CLOSE_TYPES.START_EXAM_ERROR,
+          index: id                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
         }
       }));
       }
@@ -92,7 +98,8 @@ const MCExam = () => {
         bodyType: MODAL_BODY_TYPES.MODAL_SUCCESS,
         extraObject: {
           message: 'Sesi Ujian belum dimulai',
-          type: CONFIRMATION_MODAL_CLOSE_TYPES.LOGIN_SUCCESS
+          type: CONFIRMATION_MODAL_CLOSE_TYPES.START_EXAM_ERROR,
+          index: id
         }
       }));
       }
@@ -247,7 +254,7 @@ const MCExam = () => {
         bodyType: MODAL_BODY_TYPES.MODAL_SUCCESS,
         extraObject: {
           message: 'Anda telah menyelesaikan ujian',
-          type: CONFIRMATION_MODAL_CLOSE_TYPES.LOGIN_SUCCESS
+          type: CONFIRMATION_MODAL_CLOSE_TYPES.EXAM_SUCCESS
         }
       }));
 
@@ -257,8 +264,8 @@ const MCExam = () => {
         title: "Gagal Menyimpan Ujian",
         bodyType: MODAL_BODY_TYPES.MODAL_ERROR,
         extraObject: {
-          message: 'Data ujian gagal tersimpan',
-          type: CONFIRMATION_MODAL_CLOSE_TYPES.LOGIN_ERROR
+          message: 'Data ujian gagal disimpan',
+          type: CONFIRMATION_MODAL_CLOSE_TYPES.EXAM_ERROR
         }
       }));
     } finally {
@@ -292,6 +299,25 @@ const MCExam = () => {
     return `${dayNames[date.getDay()]}, ${date.getDate()} ${monthNames[date.getMonth()]} ${date.getFullYear()} ${date.getHours()}:${date.getMinutes()} WIB`;
   };
 
+  const formatDateNew = (date) => {
+    const dayNames = ['Ahad', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+    const monthNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+
+    date = new Date(date);
+    const dayName = dayNames[date.getDay()];
+    const day = date.getDate();
+    const month = date.getMonth();
+    const monthName = monthNames[date.getMonth()];
+    const year = date.getFullYear();
+    const hour = date.getHours();
+    const minute = date.getMinutes();
+    const second = date.getSeconds();
+
+    const dateFormat = `${day}-${month}-${year} ${hour}:${minute} WIB`;
+    // const indonesianFormat = `${dayName}, ${day} ${monthName} ${year} ${hour}:${minute} WIB`;
+    return dateFormat
+  }
+
   return (
     <>
       <main className="flex flex-col max-w-lg min-h-screen relative min-w-screen my-0 mx-auto bg-gray-50 pb-10">
@@ -307,9 +333,10 @@ const MCExam = () => {
                   <li>1. Berdoa dan memohon taufik kepada Allah sebelum memulai</li>
                   <li>2. Harap jujur dan tidak curang dalam mengerjakan ujian</li>
                   <li>3. Jumlah soal adalah {quedata.length}</li>
-                  <li>4. Waktu ujian adalah {formatTime((new Date(exam.ended_at) - new Date(exam.started_at)) / 1000)} </li>
-                  <li>5. Sangat tidak dianjurkan untuk merefresh halaman karena akan memotong waktu</li>
-                  <li>6. Jika waktu habis maka akan otomatis submit</li>
+                  <li>4. Waktu Ujian adalah {formatDateNew((exam.started_at))} </li>
+                  <li>5. Durasi ujian adalah {formatTime((new Date(exam.ended_at) - new Date(exam.started_at)) / 1000)} </li>
+                  <li>6. Sangat tidak dianjurkan untuk merefresh halaman karena akan memotong waktu</li>
+                  <li>7. Jika waktu habis maka akan otomatis submit</li>
                 </ol>
                 <div className="text-center p-3 my-5">
                   <button 

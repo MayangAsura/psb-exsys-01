@@ -52,11 +52,11 @@ const routes = [
     component: FrontRegister,
   },
   {
-    path: 'u/exam/:id/show',
+    path: 'u/exam/:exam_id/show',
     component: MCExam,
   },
   {
-    path: '/u/exam/:id/start',
+    path: '/u/exam/:exam_id/start',
     component: MCExam,
   },
   {

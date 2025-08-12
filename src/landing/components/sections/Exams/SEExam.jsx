@@ -26,7 +26,7 @@ const SEExam = ({id, appl_id, started_at}) => {
   const res = []
   const dispatch = useDispatch()
   const [activeNum, setActiveNum] = useState(1)
-  // const id = useParams().id
+  // const id = useParams().exam_id
 
   const steps = [
   {
@@ -49,13 +49,14 @@ useEffect(() => {
   getQuestions(id)
   if(questions){
     questions.map((e)=>{
-console.log(e)
+console.log('que>', e)
 // console.log(answers)
       setAnswers((value)=> [{...value, exam_test_content_id: e.id}])
     })
     console.log('ans',answers)
   }
-  console.log('questions', questions)
+  console.log(activeStep)
+  // console.log('questions', questions[activeStep])
   console.log(appl_id)
 }, [id])
 
@@ -76,7 +77,7 @@ console.log(e)
       console.log(exam_test_contents);
       exam_test_contents[0].exam_test_contents.map((e, key) => (
 
-        setQuestions((question) => ([...Array.isArray(question)? question:[], {label: `Soal ${key+1}`, description: e.question, id: e.id, order: e.order, num: key+1, answer: "" }]))
+        setQuestions((question) => ([...Array.isArray(question)? question:[], {label: `No. ${key+1}`, description: e.question, id: e.id, order: e.order, num: key+1, answer: "" }]))
       )
       //  {
       //   id: e.id,
@@ -105,7 +106,7 @@ console.log(e)
     res.push(qid)    
   }
   const openErrorModal = () => {
-    dispatch(openModal({title : "Data Tidak ditemukan", bodyType : MODAL_BODY_TYPES.MODAL_SUCCESS}))
+    dispatch(openModal({title : "Data Tidak ditemukan", bodyType : MODAL_BODY_TYPES.MODAL_ERROR}))
   }
   // const openSuccessModal = () => {
   //   dispatch(openModal({title : "Login Berhasil", bodyType : MODAL_BODY_TYPES.MODAL_ERROR}))
@@ -116,18 +117,38 @@ console.log(e)
   const [activeStep, setActiveStep] = useState(0);
   const maxSteps = questions.length;
 
-  const handleNext = () => {
+  const handleNext = (e) => {
     // console.log(qid)
     if(questions[activeStep].id) {
-      handleSubmit(questions[activeStep].id)
+      handleSubmit(e,questions[activeStep].id)
       addRes(questions[activeStep].id)
 
     }
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
 
-  const handleSubmit = async (qid) => {
-    // e.preventDefault()
+
+  const formatDateNew = (date) => {
+    const dayNames = ['Ahad', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+    const monthNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+
+    date = new Date(date);
+    const dayName = dayNames[date.getDay()];
+    const day = date.getDate();
+    const month = date.getMonth();
+    const monthName = monthNames[date.getMonth()];
+    const year = date.getFullYear();
+    const hour = date.getHours();
+    const minute = date.getMinutes();
+    const second = date.getSeconds();
+
+    const dateFormat = `${day}-${month}-${year} ${hour}:${minute} WIB`;
+    // const indonesianFormat = `${dayName}, ${day} ${monthName} ${year} ${hour}:${minute} WIB`;
+    return dateFormat
+  }
+
+  const handleSubmit = async (e=null, qid=null) => {
+    if(e)e.preventDefault()
     console.log("submit")
 
     // quedata.forEach(element => {
@@ -136,14 +157,14 @@ console.log(e)
     // setAnswers(values)
     console.log(appl_id)
     const responseValues = {exam_test_id: id, appl_id: appl_id, start_at: started_at, created_by: appl_id }
-    const responseValues_ = {id: qid, exam_test_id: id, appl_id: appl_id, start_at: started_at, created_by: appl_id }
-    console.log('ans2', answers)
-    var newans = Object.values(
-  answers.reduce( (c, e) => {
-    if (!c[e.name]) c[e.name] = e;
-    return c;
-  }, {})
-);   
+    const responseValues_ = {id: qid, exam_test_id: id, appl_id: appl_id, start_at: started_at, submit_at: new Date().toISOString(), created_by: appl_id }
+    // console.log('ans2', answers)
+//     var newans = Object.values(
+//   answers.reduce( (c, e) => {
+//     if (!c[e.name]) c[e.name] = e;
+//     return c;
+//   }, {})
+// );   
 //  console
     if(qid){
     const { data, error } = await supabase
@@ -157,8 +178,8 @@ console.log(e)
       console.log('upsert response', data)
       
       
-      if(newans){
-        console.log(newans)
+      // if(newans){
+      //   console.log(newans)
         // newans.map((value) => (setResponseDetailValues([...responseDetailValues, {exam_test_response_id: data[0].id, exam_test_content_id: value.name, answer:value.answer, created_by: appl_id}])))
   //       const mappedArray = newans?.map(value => ({
   //   exam_test_response_id: data[0]?.id || '', // Fallback if `data[0]` is missing
@@ -169,32 +190,34 @@ console.log(e)
   // console.log(mappedArray)
   
   // setResponseDetailValues(mappedArray); 
-      } 
-      setResponseDetailValues(questions.map((value)=> [...responseDetailValues, {exam_test_response_id: data[0].id, exam_test_content_id: value.id, answer:value.answer}]))
+      // } 
+      // setResponseDetailValues()
+      const newResponseDetails = questions.map((value)=> ({exam_test_response_id: data[0].id, exam_test_content_id: value.id, answer:value.answer}))
       console.log('responseDetailValues',responseDetailValues)
+      console.log('question',questions)
+      console.log('question',newResponseDetails)
 
     
     const { data2, error2 } = await supabase
       .from('exam_test_response_details')
-      .upsert([
-        responseDetailValues
-      ])
+      .upsert(
+        newResponseDetails
+      )
       .select()
 
       if(!error2){
         console.log('upsert res detail', data2)
         
-        dispatch(openModal({title : "Jawaban Tersimpan", bodyType : MODAL_BODY_TYPES.MODAL_SUCCESS, 
-                extraObject : { message : '', type: CONFIRMATION_MODAL_CLOSE_TYPES.LOGIN_SUCCESS}}))
+        // dispatch(openModal({title : "Jawaban Tersimpan", bodyType : MODAL_BODY_TYPES.MODAL_SUCCESS, 
+        //         extraObject : { message : 'Jawaban berhasil disimpan pukul '+ formatDateNew(new Date()), type: CONFIRMATION_MODAL_CLOSE_TYPES.LOGIN_SUCCESS}}))
       }else{
         dispatch(openModal({title : "Gagal Menyimpan Jawaban", bodyType : MODAL_BODY_TYPES.CONFIRMATION.MODAL_SUCCESS, 
                 extraObject : { message : '', type: CONFIRMATION_MODAL_CLOSE_TYPES.LOGIN_SUCCESS}}))
       }
     }
-  }
-  
-    if(!qid){
-      const { data, error } = await supabase
+  }else{
+
+    const { data, error } = await supabase
       .from('exam_test_responses')
       .insert([
         responseValues
@@ -203,24 +226,23 @@ console.log(e)
       if(!error){
         console.log('insert res',data)
         console.log(answers)
-        setResponseDetailValues(questions.map((value)=> [...responseDetailValues, {exam_test_response_id: data[0].id, exam_test_content_id: value.id, answer:value.answer}]))
+        const newResponseDetails = questions.map((value)=> ({exam_test_response_id: data[0].id, exam_test_content_id: value.id, answer:value.answer}))
+        // setResponseDetailValues(questions.map((value)=> [...responseDetailValues, {exam_test_response_id: data[0].id, exam_test_content_id: value.id, answer:value.answer}]))
         // answers?.map((value) => (setResponseDetailValues([...Array.isArray(responseDetailValues)?responseDetailValues:[], {exam_test_response_id: data[0].id, exam_test_content_id: value.name, answer:value.answer}])))
         console.log('responseDetailValues', responseDetailValues)
       const { data2, error2 } = await supabase
       .from('exam_test_response_details')
-      .upsert([
-        responseDetailValues
-      ])
+      .insert(newResponseDetails)
       .select()
 
       if(!error2){
         console.log('insert res detail', data2)
         
         dispatch(openModal({title : "Ujian Tersimpan", bodyType : MODAL_BODY_TYPES.MODAL_SUCCESS, 
-                extraObject : { message : 'Anda telah menyelesaikan ujian', type: CONFIRMATION_MODAL_CLOSE_TYPES.EXAM_SUCCESS}}))
+                extraObject : { message : 'Anda telah menyelesaikan ujian pukul '+ formatDateNew(new Date()), type: CONFIRMATION_MODAL_CLOSE_TYPES.EXAM_SUCCESS}}))
       }else{
         dispatch(openModal({title : "Gagal Menyimpan Ujian", bodyType : MODAL_BODY_TYPES.MODAL_ERROR, 
-                extraObject : { message : 'Data ujian gagal tersimpan', type: CONFIRMATION_MODAL_CLOSE_TYPES.LOGIN_ERROR}}))
+                extraObject : { message : 'Data ujian gagal tersimpan', type: CONFIRMATION_MODAL_CLOSE_TYPES.EXAM_ERROR}}))
       }
       
       // dispatch(openModal({title : "Ujian Tersimpan", bodyType : MODAL_BODY_TYPES.MODAL_SUCCESS, size:'sm',
@@ -231,11 +253,15 @@ console.log(e)
 
         }}))
     }
+  }
+  
+    // if(!qid){
+      
         
   
     
     
-    }
+    // }
     
     // if(qid) {
     //   // setAnswers([...answers, ])
@@ -250,6 +276,8 @@ console.log(e)
 
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
+    questions.map((val,key) => key==activeStep?questions[activeStep].answer= questions[key].answer:"")
+    console.log(questions)
   };
 
   const updateFormValue = ({updateType, nameInput, value}) => {
@@ -257,11 +285,14 @@ console.log(e)
         // answers[nameInput] = value
         // if(sd)
         questions[activeStep].answer = value
-        console.log('questions[activeStep].answer', questions[activeStep].answer)
+        console.log(`questions[${activeStep}].answer`, questions[activeStep].answer)
+        console.log('questions', questions)
         // setAnswers((pres) =>  (pres?.name != nameInput? [...answers, {name: nameInput, answer: value}]:[...answers]))
         // const setValue = (name, e)=>{
     setAnswers((val) => 
-      val.filter((obj) =>(obj.name != nameInput? answers.push({exam_test_content_id: nameInput, answer: value}) :  '')))
+      val.filter((obj) => (obj.name != nameInput? [...val, {exam_test_content_id: nameInput, answer: value}]: [...val])
+    ))
+    // answers.push({exam_test_content_id: nameInput, answer: value}) :  ''
         // {exam_test_response_id: data[0].id, exam_test_content_id: value.name, answer:value.answer}
     // [...values{...values,}]
   // }
@@ -273,9 +304,23 @@ console.log(e)
         // console.log(updateType)
   }
 
-  const setIr = (qid, no) => {
+  const handlePreSubmit = async (e) => {
+    e.preventDefault();
+    console.log("submit1")
+    await handleSubmit();
+  };
+
+  const handleSubmitAutomatically = () => {
+    const fakeEvent = { preventDefault: () => {} };
+    console.log("submit2")
+    handlePreSubmit(fakeEvent);
+  };
+
+  const setResponse = (e, qid, no, value) => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
     // setActiveStep(no-1)
+    handleSubmit(e, questions[activeStep].id)
+      addRes(questions[activeStep].id)
     res.push(qid)
   }
   const handleActive = (qid, no) => {
@@ -285,14 +330,14 @@ console.log(e)
   } 
 
   return (
-    <div>
+    <div className='w-full'>
 
       <div className=''>
         <p>Soal</p>
         <div className='bg-white grid grid-cols-4 gap-3 flex-col justify-center items-center w-full px-4 pt-5 pb-6 mx-auto mt-8 mb-6 rounded-none shadow-xl sm:rounded-lg sm:px-6'>
           {questions.map((e, key) => (
           
-          <NumberItem no={key+1} qid={e.id} ques={questions} setActiveStep={handleActive} activeNum={activeNum} ir={res.includes(e.order?e.order:e.id)?true:false} setIr={setIr} or={e.order}></NumberItem>
+          <NumberItem no={key+1} qid={e.id} ques={questions} setActiveStep={handleActive} setResponse={setResponse} activeNum={activeNum} is_response={res.includes(e.order?e.order:e.id)?true:false}></NumberItem>
         ))}
         </div>
         
@@ -314,21 +359,26 @@ console.log(e)
           bgcolor: 'background.default',
         }}
       >
-        {/* <Typography>{questions[activeStep]?.label}.</Typography> */}
+      <Typography>{questions[activeStep]?.label}</Typography>
       </Paper>
       <Box sx={{ height: 655, width: '100%', p: 2 }}>
         {questions[activeStep]?.description}
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={(e) => handleSubmit(e)}>
         <div className='flex flex-col gap-5'>
-          <TextAreaInput
-            nameInput={questions[activeStep]?.id}
-            required
-            placeholder=""
-            rows="12"
-            defaultValue={questions[activeStep]?.answer}
-            className="w-full border border-gray-100 rounded py-4 px-6 text-sm bg-white"
-            updateFormValue={updateFormValue}
-          ></TextAreaInput>
+          {questions.map((que,key) => 
+            key==activeStep &&
+            <TextAreaInput
+                  nameInput={questions[activeStep]?.id}
+                  required
+                  placeholder=""
+                  rows="12"
+                  defaultValue={questions[activeStep]?.answer}
+                  className="w-full border border-gray-100 rounded py-4 px-6 text-sm bg-white"
+                  updateFormValue={updateFormValue}
+                ></TextAreaInput>
+
+           
+          )}
           <button type='submit' className='btn btn-lg w-full bg-red-500 hover:bg-red-300'>Akhiri Ujian</button>
 
         </div>
@@ -344,7 +394,7 @@ console.log(e)
         nextButton={
           <Button
             size="small"
-            onClick={handleNext}
+            onClick={(e)=>handleNext(e)}
             disabled={activeStep === maxSteps - 1}
           >
             {activeStep !== maxSteps - 1? 'Selanjutnya': 'Akhiri Ujian'}

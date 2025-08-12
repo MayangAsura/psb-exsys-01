@@ -73,7 +73,7 @@ function App() {
           {/* Place new routes user over this */}
           {/* <Route element={<ProtectedRoute/>}> */}
             <Route path="/landing" element={<Landing />} />
-            <Route path="/u/exam/:id/show" element={<LandingExam />} />
+            <Route path="/u/exam/:exam_id/show" element={<LandingExam />} />
           {/* </Route> */}
           <Route path="/register" element={<LandingRegister />} />
           

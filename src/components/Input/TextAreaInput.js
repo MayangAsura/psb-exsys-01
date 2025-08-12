@@ -12,7 +12,8 @@ function TextAreaInput({labelTitle, labelStyle, required, nameInput, type, conta
     }, [defaultValue])
     const updateInputValue = (val) => {
         setValue(val)
-        updateFormValue({updateType, nameInput,  value})
+        updateFormValue({updateType, nameInput, value})
+        // setValue("")
     }
 
     return(
@@ -24,6 +25,5 @@ function TextAreaInput({labelTitle, labelStyle, required, nameInput, type, conta
         </div>
     )
 }
-
 
 export default TextAreaInput

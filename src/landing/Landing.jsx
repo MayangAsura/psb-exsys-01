@@ -77,7 +77,7 @@ function Landing() {
                                                       .from('exam_schedule_tests')
                                                       .select('exam_schedule_id, exam_tests(exam_test_participants(appl_id))')
       // .eq('exam_tests[0].exam_schedule_tests.exam_schedule_id', sid)
-      .eq('exam_tests.exam_test_participants.appl_id', applicant.id?applicant.id: applicants[0].id)
+      .eq('exam_tests.exam_test_participants.appl_id', applicant?.id?applicant.id: applicants[0].id)
       // , exam_schedule_tests(exam_schedule_id)
       // .neq('exam_schedule_tests.exam_schedule_id', null)
       // .neq('exam_test_participants.appl_id', null)
